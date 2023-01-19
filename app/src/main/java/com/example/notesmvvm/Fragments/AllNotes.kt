@@ -10,16 +10,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notesmvvm.*
+import com.example.notesmvvm.databinding.FragmentAllNotesBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class AllNotes : Fragment(), AdapterClass.NotesAdapter {
 
+    private lateinit var binding : FragmentAllNotesBinding
     lateinit var mainViewModel : MainViewModel
     val allNotes = ArrayList<Notes>()
     var title : String = ""
@@ -31,19 +34,19 @@ class AllNotes : Fragment(), AdapterClass.NotesAdapter {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
+        binding = FragmentAllNotesBinding.inflate(inflater,container, false)
         // Inflate the layout for this fragment
 
         (activity as AppCompatActivity).supportActionBar?.title = "All Notes"
 
         val view = inflater.inflate(R.layout.fragment_all_notes, container, false)
-        val recyclerView : RecyclerView = view.findViewById(R.id.recyclerView)
-        val addNotes : FloatingActionButton = view.findViewById(R.id.button)
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
         val adapter = context?.let {
             AdapterClass(it, this, this)
         }
-        recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
 
         val dao = NoteDatabase.getDatabase(requireContext()).noteDao()
         val repo = NoteRepo(dao)
@@ -58,7 +61,7 @@ class AllNotes : Fragment(), AdapterClass.NotesAdapter {
         })
 
 
-        addNotes.setOnClickListener {
+        binding.addNotes.setOnClickListener{
             findNavController().navigate(R.id.action_allNotes_to_addEdit)
         }
 
