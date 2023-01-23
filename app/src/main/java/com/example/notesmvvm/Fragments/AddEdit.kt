@@ -13,26 +13,25 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.notesmvvm.*
+import com.example.notesmvvm.databinding.FragmentAddEditBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 class AddEdit : Fragment() {
 
+    private lateinit var binding : FragmentAddEditBinding
     lateinit var mainViewModel: MainViewModel
-     lateinit var title : EditText
-     lateinit var note : EditText
     var id : Int? = 0
     var isEditMode : Boolean? = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
+        binding = FragmentAddEditBinding.inflate(inflater, container, false)
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_add_edit, container, false)
 
-        title = view.findViewById(R.id.title)
-        note= view.findViewById(R.id.note)
-        var save : FloatingActionButton = view.findViewById(R.id.add)
+
 
         val sharedViewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         sharedViewModel.id.observe(viewLifecycleOwner, Observer{
@@ -43,20 +42,16 @@ class AddEdit : Fragment() {
         })
         val isEditMode = sharedViewModel.isEditMode
 
-//        val edittitle : String? = arguments?.getString("title")
-//        val editnote : String? = arguments?.getString("content")
-//        id = arguments?.getInt("id", 0)
-//        isEditMode = arguments?.getBoolean("isEditMode", false)
 
         if(isEditMode.value == true){
             (activity as AppCompatActivity).supportActionBar?.title = "Update Notes"
 
             sharedViewModel.title.observe(viewLifecycleOwner, Observer {
-                title.setText(it)
+                binding.title.setText(it)
             })
 
             sharedViewModel.content.observe(viewLifecycleOwner, Observer {
-                note.setText(it)
+                binding.note.setText(it)
             })
 
 
@@ -69,7 +64,7 @@ class AddEdit : Fragment() {
         val repository = NoteRepo(dao)
         mainViewModel = ViewModelProvider(this, MainVIewModelFactory(repository)).get(MainViewModel::class.java)
 
-        save.setOnClickListener {
+        binding.save.setOnClickListener {
 
             saveData()
         }
@@ -79,8 +74,8 @@ class AddEdit : Fragment() {
 
     private fun saveData(){
 
-        var mytitle : String  = title.text.toString()
-        var mynote : String = note.text.toString()
+        var mytitle : String  = binding.title.text.toString()
+        var mynote : String = binding.note.text.toString()
 
         if(!mytitle.isEmpty() or !mynote.isEmpty()){
             if(isEditMode == true){
